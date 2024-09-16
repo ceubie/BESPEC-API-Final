@@ -1,0 +1,514 @@
+swagger: '2.0'
+info:
+  title: "API Design Patterns HW"
+  description: "Brief description"
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions:
+  bearerAuth: 
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /customers:
+    get:
+      tags:
+        - Customer
+      summary: "Acquire customer objects list"
+      description: "Endpoint to retrieve customers. Authentication required."
+      security:
+      responses:
+        200:
+          description: "Successfully retrieved all customers"
+          schema:
+            $ref: "#/definitions/GetCustomersResponse"
+          examples:
+            application/json:
+              name: "Cole"
+              email: "cole@cole.cole"
+              phone: "1112223334"
+              username: "ceubie"
+              admin: 0
+
+    post:
+      tags:
+        - Customer
+      summary: "Create a customer"
+      description: "Endpoint to create a customer"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Customer object"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCustomerPayload"
+      responses:
+        200:
+          description: "Customer created successfully"
+          schema:
+            $ref: "#/definitions/CreateCustomerResponse"
+          examples:
+            application/json:
+              name: "Cole"
+              email: "cole@cole.cole"
+              phone: "1112223334"
+              username: "ceubie"
+              admin: 0
+
+  /customers/login:
+    post: 
+      tags:
+        - Customer
+      summary: "Login endpoint"
+      description: "Endpoint for user authentication and token generation"
+      security:
+        - bearerAuth:
+      parameters: 
+        - in: "body"
+          name: "body"
+          description: "Credentials for login"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginPayload"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json:
+              token: "qweiuphvxrbaip8gslrnxop"
+              message: "Successfully logged in"
+              status: "success"
+
+  /product:
+    get:
+      tags:
+        - Product
+      summary: "Retrieve a list of products"
+      description: "Endpoint to retrieve all products"
+      security:
+      responses:
+        200:
+          description: "Successfully retrieved all products"
+          schema:
+            $ref: "#/definitions/GetProductsResponse"
+          examples:
+            application/json:
+              id: 1
+              price: 10.99
+              product_name: "Lava Lamp"
+
+    post:
+      tags:
+        - Product
+      summary: "Create a product object"
+      description: "Endpoint to create a product object"
+      security:
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Product object"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateProduct"
+      responses:
+        200:
+          description: "Product created successfully"
+          schema:
+            $ref: "#/definitions/CreateProductResponse"
+          examples:
+            application/json:
+              id: 1
+              price: 10.99
+              product_name: "Lava Lamp"
+
+  /orders:
+    get:
+      tags:
+        - Order
+      summary: "Retrieve list of orders"
+      description: "Endpoint to view all orders"
+      security:
+      responses:
+        200:
+          description: "A list of orders with products"
+          schema:
+            $ref: '#/definitions/GetOrder'
+          examples:
+            application/json:
+              customer_id: 1
+              id: 4
+              order_date: "2023-11-15"
+              products:
+                - id: 1
+                  price: 10.99
+                  product_name: "Lava Lamp"
+                - id: 2
+                  price: 45.00
+                  product_name: "Sasquatch Replica Pillow Pet"
+
+  /cart:
+    post:
+      tags:
+        - Cart
+      summary: "Add a product to a customer's cart"
+      description: "Endpoint to add a product to the customer's cart"
+      security:
+        - bearerAuth:
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Cart object"
+          required: true
+          schema:
+            $ref: "#/definitions/AddToCart"
+      responses:
+        200:
+          description: "Product added to cart"
+          schema:
+            $ref: "#/definitions/AddToCartResponse"
+          examples:
+            application/json:
+              message: "Product added to cart"
+
+    get:
+      tags:
+        - Cart
+      summary: "View products in the customer's cart"
+      description: "Endpoint to view products in the customer's cart"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "Cart contents retrieved"
+          schema:
+            $ref: "#/definitions/ViewCartResponse"
+          examples:
+            application/json:
+              customer_id: 1
+              products:
+                - id: 1
+                  price: 10.99
+                  product_name: "Lava Lamp"
+                - id: 2
+                  price: 45.00
+                  product_name: "Sasquatch Replica Pillow Pet"
+
+
+    delete:
+      tags:
+        - Cart
+      summary: "Remove a product from the customer's cart"
+      description: "Endpoint to remove product from the customer's cart"
+      security:
+        - bearerAuth: 
+      responses:
+        200:
+          description: "Product removed from cart"
+          schema:
+            $ref: "#/definitions/RemoveItemFromCartResponse"
+          examples:
+            application/json:
+              message: "Product removed from cart"
+
+  /cart/empty-cart:
+    delete:
+      tags:
+        - Cart
+      summary: "Remove all products from the cart"
+      description: "Endpoint to empty the customer's cart"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "Cart has been emptied"
+          schema:
+            $ref: "#/definitions/EmptyCartResponse"
+          examples:
+            application/json:
+              message: "Cart has been emptied"
+
+  /cart/place-order:
+    post:
+      tags:
+        - Cart
+      summary: "Place an order"
+      description: "Endpoint to place an order with the products from cart"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "Order placed successfully"
+          schema:
+            $ref: "#/definitions/PlaceOrderResponse"
+          examples:
+            application/json:
+              message: "Order placed successfully"
+              order_date: "Tue, 10 Sep 2024 00:00:00 GMT"
+              order_id: 13
+
+
+definitions:
+
+  GetCustomersResponse:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Cole Eubanks"
+      phone:
+        type: "string"
+        example: "555-555-5555"
+      email:
+        type: "string"
+        example: "cole@cole.cole"
+      username:
+        type: "string"
+        example: "ceubie"
+      admin:
+        type: "integer"
+        example: "0"
+
+
+  LoginPayload:
+    type: "object"
+    properties: 
+      email:
+        type: "string"
+        description: "Email"
+      password:
+        type: "string"
+        description: "Password"
+    required:
+      - email
+      - password
+  
+  LoginResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+        description: "Successful login = authentication token"
+      message: 
+        type: "string"
+        description: "Message: success or failure"
+      status: 
+        type: "string"
+        description: "Status of operation"
+    required:
+      - message
+      - status
+
+  CreateCustomerPayload:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Cole Eubanks"
+      phone:
+        type: "string"
+        example: "555-555-555"
+      email:
+        type: "string"
+        example: "cole@cole.cole"
+      password:
+        type: "string"
+        example: "45782eety"
+      username:
+        type: "string"
+        example: "ceubie"
+      admin:
+        type: "integer"
+        example: "1"
+    required:
+      - name
+      - phone
+      - email
+      - password
+      - username
+      - admin
+
+  CreateCustomerResponse:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Cole Eubanks"
+      phone:
+        type: "string"
+        example: "555-555-5555"
+      email:
+        type: "string"
+        example: "Cole@gmail.com"
+      password:
+        type: "string"
+        example: "fdsalkhjkasf5454"
+      username:
+        type: "string"
+        description: "ceubie"
+      admin:
+        type: "integer"
+        description: "0"
+
+
+  GetProductsReponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Product ID"
+      price:
+        type: "number"
+        format: "float"
+        description: "Price of product"
+      product_name:
+        type: "string"
+        description: "Name of product"
+
+  CreateProductPayload:
+    type: "object"
+    properties:
+      price:
+        type: "number"
+        format: "float"
+        description: "Price of product"
+      product_name:
+        type: "string"
+        example: "Sasquatch Replica Pillow Pet"
+    required:
+      - price
+      - product_name
+  
+
+  CreateProductResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: "3"
+      price:
+        type: "number"
+        format: "float"
+        example: "15.90"
+      product_name:
+        type: "string"
+        example: "Sasquatch Replica Pillow Pet"
+
+  GetOrderResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Order ID"
+      customer_id:
+        type: "integer"
+        description: "ID of customer"
+      order_date:
+        type: "date"
+        description: "Date/time when the order was placed"
+      products:
+        type: "array"
+        description: "List of products in order"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              description: "Product ID"
+            product_name:
+              type: "string"
+              description: "Name of the product"
+            price:
+              type: "float"
+              description: "Product price"
+
+  AddToCartPayload:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        example: "1"
+      product_ids:
+        type: "list"
+        example: "[1, 2, 3]"
+    required:
+      - customer_id
+      - product_ids
+
+  AddToCartResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "products added to cart"
+
+  ViewCartResponse:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        description: "ID of customer"
+      products:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              description: "Product ID"
+            price:
+              type: "number"
+              format: "float"
+              description: "Product price"
+            product_name:
+              type: "string"
+              description: "Name of the product"
+
+  PlaceOrderResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        example: "Order placed succesfully"
+      order_date:
+        type: "date"
+        example: "Thurs, 25 July 2024 05:05:05 GMT"
+      order_id:
+        type: "integer"
+        example: "15"
+
+        
+  RemoveItemFromCartPayload:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        example: "1"
+      product_ids:
+        type: "list"
+        example: "[1, 2, 3]"
+    required:
+      - customer_id
+      - product_ids
+
+  RemoveItemFromCartResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Product removed from cart"
+
+  EmptyCartReponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        example: "Cart emptied"
