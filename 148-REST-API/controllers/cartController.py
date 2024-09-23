@@ -29,7 +29,7 @@ def place_order(token_id):
         return jsonify({
             "message": "Order placed succesfully",
             "order_id": new_order.id,
-            "order_date":new_order.date
+            "date":new_order.date
         }),201
     
     except ValueError:

@@ -10,4 +10,6 @@ class Product(Base):
     product_name: Mapped[str] = mapped_column(db.String(255), nullable=False)
     price: Mapped[float] = mapped_column(db.Float, nullable=False) #floats are good for pricing $10.99
 
-    orders: Mapped[List['Order']] = db.relationship(secondary=order_product)
+    orders: Mapped[List['Order']] = db.relationship(secondary=order_product,back_populates='products',overlaps="products")
+
+    customers: Mapped[List["Customer"]]= db.relationship(secondary="customer_cart", back_populates='cart')

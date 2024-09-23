@@ -77,7 +77,7 @@ def place_order(customer_id):
     if not customer.cart:
         raise ValueError ("Cart is empty")
     
-    new_order = Order(customer_id=customer.id, order_date=date.today())
+    new_order = Order(customer_id=customer.id, date=date.today())
 
     for product in customer.cart:
         new_order.products.append(product)

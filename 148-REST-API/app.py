@@ -3,6 +3,7 @@ from database import db
 from models.schemas import ma
 from limiter import limiter
 from cache import cache
+from flask_swagger_ui import get_swaggerui_blueprint
 
 
 #models
@@ -15,6 +16,7 @@ from models.orderProduct import order_product
 from routes.customerBP import customer_blueprint
 from routes.productBP import product_blueprint
 from routes.orderBP import order_blueprint
+from routes.orderProductBP import order_product_blueprint
 from routes.cartBP import cart_blueprint
 
 
@@ -40,6 +42,7 @@ def blueprint_config(app):
     app.register_blueprint(customer_blueprint, url_prefix="/customers")
     app.register_blueprint(product_blueprint, url_prefix="/products")
     app.register_blueprint(order_blueprint, url_prefix="/orders")
+    app.register_blueprint(order_product_blueprint, url_prefix="/order_products")
     app.register_blueprint(cart_blueprint, url_prefix="/cart")
     app.register_blueprint(swagger_blueprint, url_prefix="/api/docs")
 
@@ -52,6 +55,7 @@ if __name__ == '__main__':
     app = create_app('DevelopmentConfig')
 
     with app.app_context():
+        # db.drop_all()
         db.create_all()
 
     app.run()

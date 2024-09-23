@@ -19,6 +19,19 @@ def find_all(): #Not recieveing and data from controller, because this is a GET 
     return all_products #Returning my database findings to the controller
 
 def search_product(search_term):
-    query = select(Product).where(Product.product_name.like(f'%{search_term}%'))
+
+    # Log the search term for debugging
+    print(f"Search term: {search_term}")
+
+    query = select(Product).where(Product.product_name.ilike(f'%{search_term}%'))
+    
+    # Log the generated query for debugging
+    print(f"Generated query: {query}")
+
     search_products = db.session.execute(query).scalars().all()
+
+    # Log the result to see what you're getting
+    print(f"Search results: {search_products}")
+
     return search_products
+

@@ -13,4 +13,4 @@ class Order(Base):
     #many-to-one relationship: Many orders connecting to one customer
     customer: Mapped['Customer'] = db.relationship(back_populates="orders")
     #many-to-many relationship: Many orders connecting to Many products
-    products: Mapped[List['Product']] = db.relationship(secondary=order_product)
+    products: Mapped[List['Product']] = db.relationship(secondary=order_product, back_populates='orders',overlaps="orders")
